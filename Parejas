@@ -1,0 +1,53 @@
+using System;
+using System.IO;
+
+// ===== ESTRUCTURAS PRINCIPALES =====
+
+struct Libro
+{
+    public string codigo;
+    public string titulo;
+    public string autor;
+    public string editorial;
+    public int anioPublicacion;
+    public string categoria;
+    public int ejemplaresDisponibles;
+}
+
+struct Usuario
+{
+    public string carne;
+    public string nombre;
+    public string carrera;
+    public string correo;
+    public string telefono;
+    public string estado; // activo / inactivo
+}
+
+struct Prestamo
+{
+    public string codigoPrestamo;
+    public string carneUsuario;
+    public string codigoLibro;
+    public string fechaPrestamo;
+    public string fechaDevolucion;
+    public string estadoPrestamo; // activo / devuelto
+}
+
+class Program
+{
+    // Arreglos principales del sistema
+    static Libro[] libros = new Libro[10];
+    static Usuario[] usuarios = new Usuario[5];
+    static Prestamo[] prestamos = new Prestamo[10];
+
+    // Contadores
+    static int totalLibros = 0;
+    static int totalUsuarios = 0;
+    static int totalPrestamos = 0;
+
+    // Rutas de archivos
+    static string rutaLibros = "Data/libros.csv";
+    static string rutaUsuarios = "Data/usuarios.txt";
+    static string rutaPrestamos = "Data/prestamos.txt";
+}
