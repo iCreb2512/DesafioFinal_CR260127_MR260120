@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 
+// Estructura para guardar los datos de cada libro
 struct Libro
 {
     public string codigo;
@@ -12,6 +13,7 @@ struct Libro
     public int ejemplaresDisponibles;
 }
 
+// Estructura para guardar los datos de cada usuario
 struct Usuario
 {
     public string carne;
@@ -22,6 +24,7 @@ struct Usuario
     public string estado;
 }
 
+// Estructura para guardar los datos de cada préstamo
 struct Prestamo
 {
     public string codigoPrestamo;
@@ -34,25 +37,30 @@ struct Prestamo
 
 class Program
 {
+    // Arreglos para almacenar los registros
     static Libro[] libros = new Libro[10];
     static Usuario[] usuarios = new Usuario[5];
     static Prestamo[] prestamos = new Prestamo[10];
 
+    // Contadores para saber cuántos registros hay guardados
     static int totalLibros = 0;
     static int totalUsuarios = 0;
     static int totalPrestamos = 0;
 
+    // Rutas de archivos para guardar/cargar datos
     static string rutaLibros = "Data/libros.csv";
     static string rutaUsuarios = "Data/usuarios.txt";
     static string rutaPrestamos = "Data/prestamos.txt";
 
     static void Main(string[] args)
     {
+        // Si la carpeta Data no existe, se crea
         if (!Directory.Exists("Data"))
         {
             Directory.CreateDirectory("Data");
         }
 
+        // Carga inicial de datos guardados
         CargarLibros();
         CargarUsuarios();
         CargarPrestamos();
@@ -77,6 +85,7 @@ class Program
                     MenuGestionPrestamos();
                     break;
                 case "4":
+                    // Guarda todo antes de salir
                     GuardarLibros();
                     GuardarUsuarios();
                     GuardarPrestamos();
@@ -91,39 +100,219 @@ class Program
         } while (!salir);
     }
 
+    // Muestra el menú principal del sistema
     static void MostrarMenuPrincipal()
     {
         Console.WriteLine("\n╔══════════════════════════════════════════╗");
         Console.WriteLine("║   BIBLIOTECA UNIVERSITARIA - MENÚ PRINCIPAL  ║");
         Console.WriteLine("╠══════════════════════════════════════════╣");
-        Console.WriteLine("║  1. Gestión de Libros                         ║");
-        Console.WriteLine("║  2. Gestión de Usuarios                       ║");
-        Console.WriteLine("║  3. Gestión de Préstamos                      ║");
-        Console.WriteLine("║  4. Salir del Sistema                         ║");
+        Console.WriteLine("║  1. Gestión de Libros                    ║");
+        Console.WriteLine("║  2. Gestión de Usuarios                  ║");
+        Console.WriteLine("║  3. Gestión de Préstamos                 ║");
+        Console.WriteLine("║  4. Salir del Sistema                    ║");
         Console.WriteLine("╚══════════════════════════════════════════╝");
         Console.Write("Seleccione una opción: ");
     }
 
-    // ===== Metodos para que funcione todo sin explotar >:D =====
+    // Submenú para trabajar con libros
+    static void MenuGestionLibros()
+    {
+        bool volver = false;
 
+        do
+        {
+            Console.WriteLine("\n--- GESTIÓN DE LIBROS ---");
+            Console.WriteLine("1. Registrar nuevo libro");
+            Console.WriteLine("2. Buscar libro por código");
+            Console.WriteLine("3. Listar todos los libros");
+            Console.WriteLine("4. Eliminar libro");
+            Console.WriteLine("5. Volver al menú principal");
+            Console.Write("Opción: ");
+
+            string opcion = Console.ReadLine() ?? "";
+
+            switch (opcion)
+            {
+                case "1":
+                    RegistrarLibro();
+                    break;
+                case "2":
+                    BuscarLibroPorCodigo();
+                    break;
+                case "3":
+                    ListarLibros();
+                    break;
+                case "4":
+                    EliminarLibro();
+                    break;
+                case "5":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("✘ Opción inválida.");
+                    break;
+            }
+
+        } while (!volver);
+    }
+
+    // Registra un nuevo libro en el arreglo
+    static void RegistrarLibro()
+    {
+        // Evita pasar el límite del arreglo
+        if (totalLibros >= 10)
+        {
+            Console.WriteLine("✘ Capacidad máxima de libros alcanzada (10).");
+            return;
+        }
+
+        Console.WriteLine("\n--- REGISTRAR NUEVO LIBRO ---");
+        Libro nuevoLibro = new Libro();
+
+        // Validación del código: debe ser único y tener 8 caracteres
+        bool codigoValido = false;
+        while (!codigoValido)
+        {
+            Console.Write("Código (8 caracteres alfanuméricos, ej. LIB00001): ");
+            nuevoLibro.codigo = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+            if (nuevoLibro.codigo.Length != 8)
+            {
+                Console.WriteLine("✘ El código debe tener exactamente 8 caracteres.");
+            }
+            else if (BuscarIndicePorCodigo(nuevoLibro.codigo) != -1)
+            {
+                Console.WriteLine("✘ Ya existe un libro con ese código.");
+            }
+            else
+            {
+                codigoValido = true;
+            }
+        }
+
+        // Lectura de datos obligatorios
+        nuevoLibro.titulo = LeerCampoObligatorio("Título: ");
+        nuevoLibro.autor = LeerCampoObligatorio("Autor: ");
+        nuevoLibro.editorial = LeerCampoObligatorio("Editorial: ");
+        nuevoLibro.anioPublicacion = LeerEnteroEnRango("Año de publicación: ", 1900, DateTime.Now.Year);
+        nuevoLibro.categoria = LeerCampoObligatorio("Categoría: ");
+        nuevoLibro.ejemplaresDisponibles = LeerEnteroPositivo("Cantidad de ejemplares: ");
+
+        // Guardar el libro en el arreglo
+        libros[totalLibros] = nuevoLibro;
+        totalLibros++;
+
+        Console.WriteLine($"✔ Libro '{nuevoLibro.titulo}' registrado exitosamente.");
+    }
+
+    // Busca un libro por su código y devuelve la posición en el arreglo
+    static int BuscarIndicePorCodigo(string codigo)
+    {
+        for (int i = 0; i < totalLibros; i++)
+        {
+            if (libros[i].codigo == codigo)
+            {
+                return i;
+            }
+        }
+        return -1; // No encontrado
+    }
+
+    // Pide un texto que no puede ir vacío
+    static string LeerCampoObligatorio(string mensaje)
+    {
+        string valor;
+        do
+        {
+            Console.Write(mensaje);
+            valor = (Console.ReadLine() ?? "").Trim();
+
+            if (string.IsNullOrWhiteSpace(valor))
+            {
+                Console.WriteLine("✘ Este campo no puede estar vacío.");
+            }
+        } while (string.IsNullOrWhiteSpace(valor));
+
+        return valor;
+    }
+
+    // Lee un número entero dentro de un rango permitido
+    static int LeerEnteroEnRango(string mensaje, int minimo, int maximo)
+    {
+        int valor;
+        bool valido = false;
+
+        do
+        {
+            Console.Write(mensaje);
+            valido = int.TryParse(Console.ReadLine(), out valor);
+
+            if (!valido || valor < minimo || valor > maximo)
+            {
+                Console.WriteLine($"✘ Ingrese un número entre {minimo} y {maximo}.");
+                valido = false;
+            }
+        } while (!valido);
+
+        return valor;
+    }
+
+    // Lee un entero positivo o cero
+    static int LeerEnteroPositivo(string mensaje)
+    {
+        int valor;
+        bool valido = false;
+
+        do
+        {
+            Console.Write(mensaje);
+            valido = int.TryParse(Console.ReadLine(), out valor);
+
+            if (!valido || valor < 0)
+            {
+                Console.WriteLine("✘ Ingrese un número válido mayor o igual a 0.");
+                valido = false;
+            }
+        } while (!valido);
+
+        return valor;
+    }
+
+    // Busca un libro por código, todavía no implementado
+    static void BuscarLibroPorCodigo()
+    {
+        Console.WriteLine("Buscar libro por código...");
+    }
+
+    // Lista todos los libros, todavía no implementado
+    static void ListarLibros()
+    {
+        Console.WriteLine("Listar libros...");
+    }
+
+    // Elimina un libro, todavía no implementado
+    static void EliminarLibro()
+    {
+        Console.WriteLine("Eliminar libro...");
+    }
+
+    // Métodos de carga desde archivo, aún vacíos
     static void CargarLibros() { }
     static void CargarUsuarios() { }
     static void CargarPrestamos() { }
 
+    // Métodos para guardar datos, aún vacíos
     static void GuardarLibros() { }
     static void GuardarUsuarios() { }
     static void GuardarPrestamos() { }
 
-    static void MenuGestionLibros()
-    {
-        Console.WriteLine("Gestión de Libros...");
-    }
-
+    // Menú para usuarios, pendiente de desarrollar
     static void MenuGestionUsuarios()
     {
         Console.WriteLine("Gestión de Usuarios...");
     }
 
+    // Menú para préstamos, pendiente de desarrollar
     static void MenuGestionPrestamos()
     {
         Console.WriteLine("Gestión de Préstamos...");
