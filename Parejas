@@ -284,7 +284,7 @@ class Program
             Console.WriteLine("5. Volver al menú principal");
             Console.Write("Opción: ");
 
-            string opcion = Console.ReadLine() ?? "";
+            string opcion = Console.ReadLine();
 
             switch (opcion)
             {
@@ -299,6 +299,7 @@ class Program
         } while (!volver);
     }
 
+    // Registrar un nuevo usuario con validaciones
     static void RegistrarUsuario()
     {
         if (totalUsuarios >= 5)
@@ -310,11 +311,12 @@ class Program
         Console.WriteLine("\n--- REGISTRAR NUEVO USUARIO ---");
         Usuario nuevoUsuario = new Usuario();
 
+        // Validar carné: exactamente 8 dígitos numéricos
         bool carneValido = false;
         while (!carneValido)
         {
             Console.Write("Carné (8 dígitos numéricos): ");
-            nuevoUsuario.carne = (Console.ReadLine() ?? "").Trim();
+            nuevoUsuario.carne = Console.ReadLine().Trim();
 
             if (nuevoUsuario.carne.Length != 8)
             {
@@ -322,8 +324,10 @@ class Program
             }
             else
             {
+                // Verificar que todos los caracteres sean dígitos
                 bool esTodoNumero = true;
 
+                // FOR: revisar carácter por carácter
                 for (int i = 0; i < nuevoUsuario.carne.Length; i++)
                 {
                     if (!char.IsDigit(nuevoUsuario.carne[i]))
@@ -351,14 +355,16 @@ class Program
         nuevoUsuario.nombre = LeerCampoObligatorio("Nombre completo: ");
         nuevoUsuario.carrera = LeerCampoObligatorio("Carrera: ");
 
+        // Validar correo: debe contener '@' y punto después del '@'
         bool correoValido = false;
         while (!correoValido)
         {
             Console.Write("Correo electrónico: ");
-            nuevoUsuario.correo = (Console.ReadLine() ?? "").Trim();
+            nuevoUsuario.correo = Console.ReadLine().Trim();
 
             int posArroba = nuevoUsuario.correo.IndexOf('@');
 
+            // IF-ELSE: verificar formato del correo
             if (posArroba == -1)
             {
                 Console.WriteLine("✘ El correo debe contener '@'.");
@@ -374,7 +380,7 @@ class Program
         }
 
         nuevoUsuario.telefono = LeerCampoObligatorio("Teléfono: ");
-        nuevoUsuario.estado = "activo";
+        nuevoUsuario.estado = "activo"; // Por defecto, los usuarios nuevos están activos
 
         usuarios[totalUsuarios] = nuevoUsuario;
         totalUsuarios++;
