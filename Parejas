@@ -580,4 +580,120 @@ class Program
         Console.WriteLine($"✔️ Préstamo registrado. Código: {nuevoPrestamo.codigoPrestamo}");
         Console.WriteLine($"  Libro: {libros[indiceLibro].titulo} → Quedan {libros[indiceLibro].ejemplaresDisponibles} ejemplares.");
     }
+
+    static void RegistrarDevolucion()
+    {
+        Console.Write("\nIngrese el código del préstamo: ");
+        string codigoPrestamo = Console.ReadLine().Trim().ToUpper();
+
+        // FOR: buscar el préstamo por su código
+        int indicePrestamo = -1;
+        for (int i = 0; i < totalPrestamos; i++)
+        {
+            if (prestamos[i].codigoPrestamo == codigoPrestamo)
+            {
+                indicePrestamo = i;
+                break;
+            }
+        }
+
+        if (indicePrestamo == -1)
+        {
+            Console.WriteLine("✘ No se encontró ningún préstamo con ese código.");
+            return;
+        }
+
+        // Verificar que el préstamo aún está activo
+        if (prestamos[indicePrestamo].estadoPrestamo == "devuelto")
+        {
+            Console.WriteLine("✘ Este préstamo ya fue devuelto.");
+            return;
+        }
+
+        // Actualizar estado del préstamo a devuelto
+        prestamos[indicePrestamo].estadoPrestamo = "devuelto";
+
+        // Devolver el ejemplar al inventario del libro
+        int indiceLibro = BuscarIndicePorCodigo(prestamos[indicePrestamo].codigoLibro);
+        if (indiceLibro != -1)
+        {
+            libros[indiceLibro].ejemplaresDisponibles++;
+            Console.WriteLine($"✔️ Devolución registrada. Libro '{libros[indiceLibro].titulo}' → {libros[indiceLibro].ejemplaresDisponibles} ejemplares disponibles.");
+        }
+    }
+
+    // Consultar préstamos activos de un usuario
+    static void ConsultarPrestamosActivos()
+    {
+        Console.Write("\nIngrese el carné del usuario: ");
+        string carne = Console.ReadLine().Trim();
+
+        bool hayPrestamos = false;
+        Console.WriteLine($"\n--- PRÉSTAMOS ACTIVOS DEL USUARIO {carne} ---");
+
+        // FOR: recorrer todos los préstamos
+        for (int i = 0; i < totalPrestamos; i++)
+        {
+            // IF: filtrar por carné y estado activo
+            if (prestamos[i].carneUsuario == carne && prestamos[i].estadoPrestamo == "activo")
+            {
+                Console.WriteLine($"\n  Código préstamo  : {prestamos[i].codigoPrestamo}");
+                Console.WriteLine($"  Código libro     : {prestamos[i].codigoLibro}");
+                Console.WriteLine($"  Fecha préstamo   : {prestamos[i].fechaPrestamo}");
+                Console.WriteLine($"  Fecha devolución : {prestamos[i].fechaDevolucion}");
+                hayPrestamos = true;
+            }
+        }
+
+        if (!hayPrestamos)
+        {
+            Console.WriteLine("  Este usuario no tiene préstamos activos.");
+        }
+    }
+
+    // Actualizar el estado de un préstamo manualmente
+    static void ActualizarEstadoPrestamo()
+    {
+        Console.Write("\nIngrese el código del préstamo: ");
+        string codigo = Console.ReadLine().Trim().ToUpper();
+
+        // Buscar el préstamo
+        int indice = -1;
+        for (int i = 0; i < totalPrestamos; i++)
+        {
+            if (prestamos[i].codigoPrestamo == codigo)
+            {
+                indice = i;
+                break;
+            }
+        }
+
+        if (indice == -1)
+        {
+            Console.WriteLine("✘ Préstamo no encontrado.");
+            return;
+        }
+
+        Console.WriteLine($"Estado actual: {prestamos[indice].estadoPrestamo}");
+        Console.WriteLine("1. Activo");
+        Console.WriteLine("2. Devuelto");
+        Console.Write("Nuevo estado: ");
+        string opcion = Console.ReadLine();
+
+        // SWITCH-CASE para actualizar estado
+        switch (opcion)
+        {
+            case "1":
+                prestamos[indice].estadoPrestamo = "activo";
+                Console.WriteLine("✔️ Estado actualizado a 'activo'.");
+                break;
+            case "2":
+                prestamos[indice].estadoPrestamo = "devuelto";
+                Console.WriteLine("✔️ Estado actualizado a 'devuelto'.");
+                break;
+            default:
+                Console.WriteLine("✘ Opción inválida.");
+                break;
+        }
+    }
 }
