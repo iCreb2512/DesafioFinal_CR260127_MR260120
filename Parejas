@@ -481,6 +481,103 @@ class Program
 
     static void MenuGestionPrestamos()
     {
-        Console.WriteLine("Gestión de Préstamos...");
+        bool volver = false;
+
+        do
+        {
+            Console.WriteLine("\n--- GESTIÓN DE PRÉSTAMOS ---");
+            Console.WriteLine("1. Registrar préstamo");
+            Console.WriteLine("2. Registrar devolución");
+            Console.WriteLine("3. Consultar préstamos activos de un usuario");
+            Console.WriteLine("4. Actualizar estado de préstamo");
+            Console.WriteLine("5. Exportar reporte de préstamos activos");
+            Console.WriteLine("6. Volver al menú principal");
+            Console.Write("Opción: ");
+
+            string opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "1": RegistrarPrestamo(); break;
+                case "2": RegistrarDevolucion(); break;
+                case "3": ConsultarPrestamosActivos(); break;
+                case "4": ActualizarEstadoPrestamo(); break;
+                case "5": ExportarReportePrestamos(); break;
+                case "6": volver = true; break;
+                default: Console.WriteLine("✘ Opción inválida."); break;
+            }
+
+        } while (!volver);
+    }
+
+    // Registrar un nuevo préstamo
+    static void RegistrarPrestamo()
+    {
+        if (totalPrestamos >= 10)
+        {
+            Console.WriteLine("✘ Capacidad máxima de préstamos alcanzada (10).");
+            return;
+        }
+
+        Console.WriteLine("\n--- REGISTRAR PRÉSTAMO ---");
+
+        // Verificar que el usuario existe
+        Console.Write("Carné del usuario: ");
+        string carne = Console.ReadLine().Trim();
+
+        int indiceUsuario = BuscarIndiceUsuarioPorCarne(carne);
+        if (indiceUsuario == -1)
+        {
+            Console.WriteLine("✘ No existe ningún usuario con ese carné.");
+            return;
+        }
+
+        // Verificar que el usuario está activo
+        if (usuarios[indiceUsuario].estado != "activo")
+        {
+            Console.WriteLine("✘ El usuario está inactivo y no puede realizar préstamos.");
+            return;
+        }
+
+        // Verificar que el libro existe y tiene ejemplares disponibles
+        Console.Write("Código del libro: ");
+        string codigoLibro = Console.ReadLine().Trim().ToUpper();
+
+        int indiceLibro = BuscarIndicePorCodigo(codigoLibro);
+        if (indiceLibro == -1)
+        {
+            Console.WriteLine("✘ No existe ningún libro con ese código.");
+            return;
+        }
+
+        // IF: verificar disponibilidad del libro
+        if (libros[indiceLibro].ejemplaresDisponibles <= 0)
+        {
+            Console.WriteLine("✘ No hay ejemplares disponibles de ese libro.");
+            return;
+        }
+
+        // Leer y validar fechas
+        string fechaPrestamo = LeerFecha("Fecha de préstamo (dd/mm/yyyy): ");
+        string fechaDevolucion = LeerFecha("Fecha estimada de devolución (dd/mm/yyyy): ");
+
+        // Crear el préstamo
+        Prestamo nuevoPrestamo = new Prestamo();
+        nuevoPrestamo.codigoPrestamo = "P" + (totalPrestamos + 1).ToString("D7"); // Generar código único
+        nuevoPrestamo.carneUsuario = carne;
+        nuevoPrestamo.codigoLibro = codigoLibro;
+        nuevoPrestamo.fechaPrestamo = fechaPrestamo;
+        nuevoPrestamo.fechaDevolucion = fechaDevolucion;
+        nuevoPrestamo.estadoPrestamo = "activo";
+
+        // Restar un ejemplar disponible del libro
+        libros[indiceLibro].ejemplaresDisponibles--;
+
+        // Guardar el préstamo
+        prestamos[totalPrestamos] = nuevoPrestamo;
+        totalPrestamos++;
+
+        Console.WriteLine($"✔️ Préstamo registrado. Código: {nuevoPrestamo.codigoPrestamo}");
+        Console.WriteLine($"  Libro: {libros[indiceLibro].titulo} → Quedan {libros[indiceLibro].ejemplaresDisponibles} ejemplares.");
     }
 }
