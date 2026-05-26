@@ -388,6 +388,68 @@ class Program
         Console.WriteLine($"✔ Usuario '{nuevoUsuario.nombre}' registrado exitosamente.");
     }
 
+    // Buscar usuario por carné
+    static void BuscarUsuarioPorCarne()
+    {
+        Console.Write("\nIngrese el carné del usuario: ");
+        string carne = Console.ReadLine().Trim();
+
+        int indice = BuscarIndiceUsuarioPorCarne(carne);
+
+        if (indice != -1)
+        {
+            MostrarDatosUsuario(usuarios[indice]);
+        }
+        else
+        {
+            Console.WriteLine("✘ No se encontró ningún usuario con ese carné.");
+        }
+    }
+
+    // Buscar usuario por nombre (búsqueda parcial, no distingue mayúsculas)
+    static void BuscarUsuarioPorNombre()
+    {
+        Console.Write("\nIngrese el nombre o parte del nombre: ");
+        string busqueda = Console.ReadLine().Trim().ToLower();
+
+        bool encontrado = false;
+
+        // FOR: recorrer todos los usuarios
+        for (int i = 0; i < totalUsuarios; i++)
+        {
+            // Contains: verificar si el nombre del usuario contiene el texto buscado
+            if (usuarios[i].nombre.ToLower().Contains(busqueda))
+            {
+                MostrarDatosUsuario(usuarios[i]);
+                encontrado = true;
+            }
+        }
+
+        if (!encontrado)
+        {
+            Console.WriteLine("✘ No se encontraron usuarios con ese nombre.");
+        }
+    }
+
+    // Listar todos los usuarios
+    static void ListarUsuarios()
+    {
+        if (totalUsuarios == 0)
+        {
+            Console.WriteLine("✘ No hay usuarios registrados.");
+            return;
+        }
+
+        Console.WriteLine("\n--- LISTADO DE USUARIOS ---");
+
+        for (int i = 0; i < totalUsuarios; i++)
+        {
+            Console.WriteLine($"\n[{i + 1}]");
+            MostrarDatosUsuario(usuarios[i]);
+        }
+    }
+
+    // Retorna el índice del usuario en el arreglo, o -1 si no existe
     static int BuscarIndiceUsuarioPorCarne(string carne)
     {
         for (int i = 0; i < totalUsuarios; i++)
@@ -398,48 +460,15 @@ class Program
         return -1;
     }
 
-    static void BuscarUsuarioPorCarne()
-    {
-        Console.Write("\nIngrese el carné del usuario: ");
-        string carne = (Console.ReadLine() ?? "").Trim();
-
-        int indice = BuscarIndiceUsuarioPorCarne(carne);
-
-        if (indice != -1)
-            MostrarDatosUsuario(usuarios[indice]);
-        else
-            Console.WriteLine("✘ No se encontró ningún usuario con ese carné.");
-    }
-
-    static void BuscarUsuarioPorNombre()
-    {
-        Console.WriteLine("Buscar usuario por nombre...");
-    }
-
-    static void ListarUsuarios()
-    {
-        if (totalUsuarios == 0)
-        {
-            Console.WriteLine("✘ No hay usuarios registrados.");
-            return;
-        }
-
-        Console.WriteLine("\n--- LISTADO DE USUARIOS ---");
-        for (int i = 0; i < totalUsuarios; i++)
-        {
-            Console.WriteLine($"\n[{i + 1}]");
-            MostrarDatosUsuario(usuarios[i]);
-        }
-    }
-
+    // Mostrar todos los datos de un usuario
     static void MostrarDatosUsuario(Usuario u)
     {
-        Console.WriteLine($"Carné    : {u.carne}");
-        Console.WriteLine($"Nombre   : {u.nombre}");
-        Console.WriteLine($"Carrera  : {u.carrera}");
-        Console.WriteLine($"Correo   : {u.correo}");
-        Console.WriteLine($"Teléfono : {u.telefono}");
-        Console.WriteLine($"Estado   : {u.estado}");
+        Console.WriteLine($"  Carné       : {u.carne}");
+        Console.WriteLine($"  Nombre      : {u.nombre}");
+        Console.WriteLine($"  Carrera     : {u.carrera}");
+        Console.WriteLine($"  Correo      : {u.correo}");
+        Console.WriteLine($"  Teléfono    : {u.telefono}");
+        Console.WriteLine($"  Estado      : {u.estado}");
     }
 
     static void CargarLibros() { }
