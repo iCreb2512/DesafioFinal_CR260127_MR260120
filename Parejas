@@ -176,7 +176,7 @@ class Program
     static void BuscarLibroPorCodigo()
     {
         Console.Write("\nIngrese el código del libro: ");
-        string codigo = Console.ReadLine().Trim().ToUpper();
+        string codigo = (Console.ReadLine() ?? "").Trim().ToUpper();
 
         int indice = BuscarIndicePorCodigo(codigo);
 
@@ -204,7 +204,7 @@ class Program
     static void EliminarLibro()
     {
         Console.Write("\nCódigo a eliminar: ");
-        string codigo = Console.ReadLine().Trim().ToUpper();
+        string codigo = (Console.ReadLine() ?? "").Trim().ToUpper();
 
         int indice = BuscarIndicePorCodigo(codigo);
 
@@ -248,6 +248,7 @@ class Program
     static int LeerEnteroEnRango(string mensaje, int min, int max)
     {
         int valor;
+        Console.Write(mensaje);
         while (!int.TryParse(Console.ReadLine(), out valor) || valor < min || valor > max)
         {
             Console.Write($"Ingrese un valor entre {min} y {max}: ");
@@ -258,11 +259,181 @@ class Program
     static int LeerEnteroPositivo(string mensaje)
     {
         int valor;
+        Console.Write(mensaje);
         while (!int.TryParse(Console.ReadLine(), out valor) || valor < 0)
         {
             Console.Write("Ingrese un número válido: ");
         }
         return valor;
+    }
+
+    // ============================================================
+    // MÓDULO B - GESTIÓN DE USUARIOS
+    // ============================================================
+    static void MenuGestionUsuarios()
+    {
+        bool volver = false;
+
+        do
+        {
+            Console.WriteLine("\n--- GESTIÓN DE USUARIOS ---");
+            Console.WriteLine("1. Registrar usuario");
+            Console.WriteLine("2. Buscar usuario por carné");
+            Console.WriteLine("3. Buscar usuario por nombre");
+            Console.WriteLine("4. Listar todos los usuarios");
+            Console.WriteLine("5. Volver al menú principal");
+            Console.Write("Opción: ");
+
+            string opcion = Console.ReadLine() ?? "";
+
+            switch (opcion)
+            {
+                case "1": RegistrarUsuario(); break;
+                case "2": BuscarUsuarioPorCarne(); break;
+                case "3": BuscarUsuarioPorNombre(); break;
+                case "4": ListarUsuarios(); break;
+                case "5": volver = true; break;
+                default: Console.WriteLine("✘ Opción inválida."); break;
+            }
+
+        } while (!volver);
+    }
+
+    static void RegistrarUsuario()
+    {
+        if (totalUsuarios >= 5)
+        {
+            Console.WriteLine("✘ Capacidad máxima de usuarios alcanzada (5).");
+            return;
+        }
+
+        Console.WriteLine("\n--- REGISTRAR NUEVO USUARIO ---");
+        Usuario nuevoUsuario = new Usuario();
+
+        bool carneValido = false;
+        while (!carneValido)
+        {
+            Console.Write("Carné (8 dígitos numéricos): ");
+            nuevoUsuario.carne = (Console.ReadLine() ?? "").Trim();
+
+            if (nuevoUsuario.carne.Length != 8)
+            {
+                Console.WriteLine("✘ El carné debe tener exactamente 8 dígitos.");
+            }
+            else
+            {
+                bool esTodoNumero = true;
+
+                for (int i = 0; i < nuevoUsuario.carne.Length; i++)
+                {
+                    if (!char.IsDigit(nuevoUsuario.carne[i]))
+                    {
+                        esTodoNumero = false;
+                        break;
+                    }
+                }
+
+                if (!esTodoNumero)
+                {
+                    Console.WriteLine("✘ El carné solo debe contener dígitos numéricos.");
+                }
+                else if (BuscarIndiceUsuarioPorCarne(nuevoUsuario.carne) != -1)
+                {
+                    Console.WriteLine("✘ Ya existe un usuario con ese carné.");
+                }
+                else
+                {
+                    carneValido = true;
+                }
+            }
+        }
+
+        nuevoUsuario.nombre = LeerCampoObligatorio("Nombre completo: ");
+        nuevoUsuario.carrera = LeerCampoObligatorio("Carrera: ");
+
+        bool correoValido = false;
+        while (!correoValido)
+        {
+            Console.Write("Correo electrónico: ");
+            nuevoUsuario.correo = (Console.ReadLine() ?? "").Trim();
+
+            int posArroba = nuevoUsuario.correo.IndexOf('@');
+
+            if (posArroba == -1)
+            {
+                Console.WriteLine("✘ El correo debe contener '@'.");
+            }
+            else if (nuevoUsuario.correo.IndexOf('.', posArroba) == -1)
+            {
+                Console.WriteLine("✘ El correo debe tener un punto después del '@'.");
+            }
+            else
+            {
+                correoValido = true;
+            }
+        }
+
+        nuevoUsuario.telefono = LeerCampoObligatorio("Teléfono: ");
+        nuevoUsuario.estado = "activo";
+
+        usuarios[totalUsuarios] = nuevoUsuario;
+        totalUsuarios++;
+
+        Console.WriteLine($"✔ Usuario '{nuevoUsuario.nombre}' registrado exitosamente.");
+    }
+
+    static int BuscarIndiceUsuarioPorCarne(string carne)
+    {
+        for (int i = 0; i < totalUsuarios; i++)
+        {
+            if (usuarios[i].carne == carne)
+                return i;
+        }
+        return -1;
+    }
+
+    static void BuscarUsuarioPorCarne()
+    {
+        Console.Write("\nIngrese el carné del usuario: ");
+        string carne = (Console.ReadLine() ?? "").Trim();
+
+        int indice = BuscarIndiceUsuarioPorCarne(carne);
+
+        if (indice != -1)
+            MostrarDatosUsuario(usuarios[indice]);
+        else
+            Console.WriteLine("✘ No se encontró ningún usuario con ese carné.");
+    }
+
+    static void BuscarUsuarioPorNombre()
+    {
+        Console.WriteLine("Buscar usuario por nombre...");
+    }
+
+    static void ListarUsuarios()
+    {
+        if (totalUsuarios == 0)
+        {
+            Console.WriteLine("✘ No hay usuarios registrados.");
+            return;
+        }
+
+        Console.WriteLine("\n--- LISTADO DE USUARIOS ---");
+        for (int i = 0; i < totalUsuarios; i++)
+        {
+            Console.WriteLine($"\n[{i + 1}]");
+            MostrarDatosUsuario(usuarios[i]);
+        }
+    }
+
+    static void MostrarDatosUsuario(Usuario u)
+    {
+        Console.WriteLine($"Carné    : {u.carne}");
+        Console.WriteLine($"Nombre   : {u.nombre}");
+        Console.WriteLine($"Carrera  : {u.carrera}");
+        Console.WriteLine($"Correo   : {u.correo}");
+        Console.WriteLine($"Teléfono : {u.telefono}");
+        Console.WriteLine($"Estado   : {u.estado}");
     }
 
     static void CargarLibros() { }
@@ -272,11 +443,6 @@ class Program
     static void GuardarLibros() { }
     static void GuardarUsuarios() { }
     static void GuardarPrestamos() { }
-
-    static void MenuGestionUsuarios()
-    {
-        Console.WriteLine("Gestión de Usuarios...");
-    }
 
     static void MenuGestionPrestamos()
     {
