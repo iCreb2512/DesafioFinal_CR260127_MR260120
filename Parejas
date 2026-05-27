@@ -234,37 +234,119 @@ class Program
         Console.WriteLine($"Ejemplares: {l.ejemplaresDisponibles}");
     }
 
-    static string LeerCampoObligatorio(string mensaje)
+    static string LeerCampoObligatorio(string etiqueta)
     {
-        string valor;
+        string valor = "";
+
+        // DO-WHILE: repetir hasta que el campo no esté vacío
         do
         {
-            Console.Write(mensaje);
-            valor = (Console.ReadLine() ?? "").Trim();
-        } while (string.IsNullOrWhiteSpace(valor));
+            Console.Write(etiqueta);
+            valor = Console.ReadLine().Trim();
+
+            if (valor == "")
+            {
+                Console.WriteLine("✘ Este campo es obligatorio, no puede estar vacío.");
+            }
+
+        } while (valor == "");
+
         return valor;
     }
 
-    static int LeerEnteroEnRango(string mensaje, int min, int max)
+    // Leer un número entero dentro de un rango específico
+    static int LeerEnteroEnRango(string etiqueta, int min, int max)
     {
-        int valor;
-        Console.Write(mensaje);
-        while (!int.TryParse(Console.ReadLine(), out valor) || valor < min || valor > max)
+        int numero = 0;
+        bool valido = false;
+
+        // WHILE: repetir hasta que se ingrese un número válido
+        while (!valido)
         {
-            Console.Write($"Ingrese un valor entre {min} y {max}: ");
+            Console.Write(etiqueta);
+            string entrada = Console.ReadLine().Trim();
+
+            try
+            {
+                // Intentar convertir la entrada a entero
+                numero = int.Parse(entrada);
+
+                if (numero < min || numero > max)
+                {
+                    Console.WriteLine($"✘ El valor debe estar entre {min} y {max}.");
+                }
+                else
+                {
+                    valido = true;
+                }
+            }
+            catch (FormatException)
+            {
+                // Captura de excepción si el usuario ingresa letras o símbolos
+                Console.WriteLine("✘ Ingrese un número entero válido.");
+            }
         }
-        return valor;
+
+        return numero;
     }
 
-    static int LeerEnteroPositivo(string mensaje)
+    // Leer un entero positivo (mayor o igual a 0)
+    static int LeerEnteroPositivo(string etiqueta)
     {
-        int valor;
-        Console.Write(mensaje);
-        while (!int.TryParse(Console.ReadLine(), out valor) || valor < 0)
+        int numero = 0;
+        bool valido = false;
+
+        while (!valido)
         {
-            Console.Write("Ingrese un número válido: ");
+            Console.Write(etiqueta);
+            string entrada = Console.ReadLine().Trim();
+
+            try
+            {
+                numero = int.Parse(entrada);
+
+                if (numero < 0)
+                {
+                    Console.WriteLine("✘ El valor no puede ser negativo.");
+                }
+                else
+                {
+                    valido = true;
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("✘ Ingrese un número entero válido.");
+            }
         }
-        return valor;
+
+        return numero;
+    }
+
+    // Leer una fecha en formato dd/mm/yyyy con validación básica
+    static string LeerFecha(string etiqueta)
+    {
+        string fecha = "";
+        bool valido = false;
+
+        // WHILE: repetir hasta ingresar una fecha con formato válido
+        while (!valido)
+        {
+            Console.Write(etiqueta);
+            fecha = Console.ReadLine().Trim();
+
+            // Validar: longitud 10, posiciones 2 y 5 deben ser '/'
+            if (fecha.Length == 10 && fecha[2] == '/' && fecha[5] == '/')
+            {
+                valido = true;
+            }
+            else
+            {
+                Console.WriteLine("✘ Formato de fecha inválido. Use dd/mm/yyyy (ej. 22/05/2026).");
+            }
+        }
+
+        return fecha;
     }
 
     // ============================================================
