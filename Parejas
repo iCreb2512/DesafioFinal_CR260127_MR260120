@@ -507,8 +507,73 @@ class Program
             Console.WriteLine($"✘ Error al cargar libros: {ex.Message}");
         }
     }
-    static void CargarUsuarios() { }
-    static void CargarPrestamos() { }
+    // Cargar usuarios desde usuarios.txt
+    static void CargarUsuarios()
+    {
+        if (!File.Exists(rutaUsuarios)) return;
+
+        try
+        {
+            StreamReader lector = new StreamReader(rutaUsuarios);
+            string linea;
+
+            while ((linea = lector.ReadLine()) != null && totalUsuarios < 5)
+            {
+                string[] partes = linea.Split('|');
+
+                if (partes.Length == 6)
+                {
+                    usuarios[totalUsuarios].carne = partes[0];
+                    usuarios[totalUsuarios].nombre = partes[1];
+                    usuarios[totalUsuarios].carrera = partes[2];
+                    usuarios[totalUsuarios].correo = partes[3];
+                    usuarios[totalUsuarios].telefono = partes[4];
+                    usuarios[totalUsuarios].estado = partes[5];
+                    totalUsuarios++;
+                }
+            }
+
+            lector.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al cargar usuarios: {ex.Message}");
+        }
+    }
+
+    // Cargar préstamos desde prestamos.txt
+    static void CargarPrestamos()
+    {
+        if (!File.Exists(rutaPrestamos)) return;
+
+        try
+        {
+            StreamReader lector = new StreamReader(rutaPrestamos);
+            string linea;
+
+            while ((linea = lector.ReadLine()) != null && totalPrestamos < 10)
+            {
+                string[] partes = linea.Split('|');
+
+                if (partes.Length == 6)
+                {
+                    prestamos[totalPrestamos].codigoPrestamo = partes[0];
+                    prestamos[totalPrestamos].carneUsuario = partes[1];
+                    prestamos[totalPrestamos].codigoLibro = partes[2];
+                    prestamos[totalPrestamos].fechaPrestamo = partes[3];
+                    prestamos[totalPrestamos].fechaDevolucion = partes[4];
+                    prestamos[totalPrestamos].estadoPrestamo = partes[5];
+                    totalPrestamos++;
+                }
+            }
+
+            lector.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al cargar préstamos: {ex.Message}");
+        }
+    }
 
     // Guardar libros en libros.csv
     static void GuardarLibros()
@@ -531,8 +596,45 @@ class Program
             Console.WriteLine($"✘ Error al guardar libros: {ex.Message}");
         }
     }
-    static void GuardarUsuarios() { }
-    static void GuardarPrestamos() { }
+    static void GuardarUsuarios()
+    {
+        try
+        {
+            StreamWriter escritor = new StreamWriter(rutaUsuarios);
+
+            for (int i = 0; i < totalUsuarios; i++)
+            {
+                // Separador '|' para evitar conflictos con comas en nombres
+                escritor.WriteLine($"{usuarios[i].carne}|{usuarios[i].nombre}|{usuarios[i].carrera}|{usuarios[i].correo}|{usuarios[i].telefono}|{usuarios[i].estado}");
+            }
+
+            escritor.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al guardar usuarios: {ex.Message}");
+        }
+    }
+
+    // Guardar préstamos en prestamos.txt
+    static void GuardarPrestamos()
+    {
+        try
+        {
+            StreamWriter escritor = new StreamWriter(rutaPrestamos);
+
+            for (int i = 0; i < totalPrestamos; i++)
+            {
+                escritor.WriteLine($"{prestamos[i].codigoPrestamo}|{prestamos[i].carneUsuario}|{prestamos[i].codigoLibro}|{prestamos[i].fechaPrestamo}|{prestamos[i].fechaDevolucion}|{prestamos[i].estadoPrestamo}");
+            }
+
+            escritor.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al guardar préstamos: {ex.Message}");
+        }
+    }
 
     static void MenuGestionPrestamos()
     {
