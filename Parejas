@@ -234,6 +234,47 @@ class Program
         Console.WriteLine($"Ejemplares: {l.ejemplaresDisponibles}");
     }
 
+    static void MostrarReporteCategorias()
+    {
+        // Matriz de 5 filas x 2 columnas:
+        // Columna 0 = cantidad de libros en esa categoría
+        // Columna 1 = total de ejemplares en esa categoría
+        string[] nombresCategoria = { "Ciencias", "Literatura", "Historia", "Tecnología", "Otros" };
+        int[,] matrizCategorias = new int[5, 2];
+
+        // FOR externo: recorrer todos los libros registrados
+        for (int i = 0; i < totalLibros; i++)
+        {
+            // FOR interno: encontrar la categoría del libro en el arreglo de categorías
+            for (int j = 0; j < nombresCategoria.Length; j++)
+            {
+                // IF: comparar categoría ignorando mayúsculas/minúsculas
+                if (libros[i].categoria.ToLower() == nombresCategoria[j].ToLower())
+                {
+                    matrizCategorias[j, 0]++; // Sumar 1 al conteo de libros
+                    matrizCategorias[j, 1] += libros[i].ejemplaresDisponibles; // Sumar ejemplares
+                    break;
+                }
+                else if (j == nombresCategoria.Length - 1)
+                {
+                    // Si no coincide con ninguna, va a "Otros"
+                    matrizCategorias[4, 0]++;
+                    matrizCategorias[4, 1] += libros[i].ejemplaresDisponibles;
+                }
+            }
+        }
+
+        Console.WriteLine("\n--- REPORTE POR CATEGORÍAS ---");
+        Console.WriteLine($"{"Categoría",-15} {"Títulos",8} {"Ejemplares",12}");
+        Console.WriteLine(new string('-', 37));
+
+        // FOR: imprimir la matriz fila por fila
+        for (int j = 0; j < 5; j++)
+        {
+            Console.WriteLine($"{nombresCategoria[j],-15} {matrizCategorias[j, 0],8} {matrizCategorias[j, 1],12}");
+        }
+    }
+
     static string LeerCampoObligatorio(string etiqueta)
     {
         string valor = "";
