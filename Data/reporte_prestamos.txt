@@ -1,0 +1,6 @@
+=== REPORTE DE PRÉSTAMOS ACTIVOS ===
+Generado: 26/05/2026 08:50:37 p. m.
+=====================================
+Código: P0000001 | Usuario: 12345678 | Libro: 12345678 | Devolución: 03/11/2026
+
+Total préstamos activos: 1
