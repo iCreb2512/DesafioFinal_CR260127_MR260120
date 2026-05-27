@@ -1,0 +1,7 @@
+        Prompt enviado a la IA
+        
+/*Requisitos técnicos: usar structs para las tres entidades, arreglos estáticos con capacidad máxima de 10 libros, 5 usuarios y 10 préstamos (sin usar List ni clases),
+ persistencia en archivos CSV y TXT, y navegación por menús y submenús en consola. Debe incluir: registro con validaciones completas (unicidad de códigos, formato de correo, rango de años, campos obligatorios), 
+ búsqueda por código y por nombre parcial, eliminación desplazando el arreglo, gestión de devoluciones que restaure inventario, reporte de libros agrupados por categoría usando una matriz bidimensional,
+y exportación de préstamos activos a un archivo de texto. Usa convenciones de C# con PascalCase, constantes para los límites, colores en consola para mensajes de éxito y error, y comenta las estructuras de control principales
+(for, while, do-while, switch) porque es un proyecto académico universitario.*/
