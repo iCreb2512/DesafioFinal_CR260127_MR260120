@@ -471,11 +471,66 @@ class Program
         Console.WriteLine($"  Estado      : {u.estado}");
     }
 
-    static void CargarLibros() { }
+    // Cargar libros desde libros.csv
+    static void CargarLibros()
+    {
+        if (!File.Exists(rutaLibros)) return; // Si no existe el archivo, no cargar nada
+
+        try
+        {
+            StreamReader lector = new StreamReader(rutaLibros);
+            string linea;
+
+            // WHILE: leer línea por línea hasta el final del archivo
+            while ((linea = lector.ReadLine()) != null && totalLibros < 10)
+            {
+                string[] partes = linea.Split(',');
+
+                // Verificar que la línea tiene todos los campos (7 campos)
+                if (partes.Length == 7)
+                {
+                    libros[totalLibros].codigo = partes[0];
+                    libros[totalLibros].titulo = partes[1];
+                    libros[totalLibros].autor = partes[2];
+                    libros[totalLibros].editorial = partes[3];
+                    libros[totalLibros].anioPublicacion = int.Parse(partes[4]);
+                    libros[totalLibros].categoria = partes[5];
+                    libros[totalLibros].ejemplaresDisponibles = int.Parse(partes[6]);
+                    totalLibros++;
+                }
+            }
+
+            lector.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al cargar libros: {ex.Message}");
+        }
+    }
     static void CargarUsuarios() { }
     static void CargarPrestamos() { }
 
-    static void GuardarLibros() { }
+    // Guardar libros en libros.csv
+    static void GuardarLibros()
+    {
+        try
+        {
+            StreamWriter escritor = new StreamWriter(rutaLibros);
+
+            // FOR: guardar cada libro en el archivo CSV
+            for (int i = 0; i < totalLibros; i++)
+            {
+                // Formato CSV: campo1,campo2,campo3,...
+                escritor.WriteLine($"{libros[i].codigo},{libros[i].titulo},{libros[i].autor},{libros[i].editorial},{libros[i].anioPublicacion},{libros[i].categoria},{libros[i].ejemplaresDisponibles}");
+            }
+
+            escritor.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al guardar libros: {ex.Message}");
+        }
+    }
     static void GuardarUsuarios() { }
     static void GuardarPrestamos() { }
 
@@ -694,6 +749,42 @@ class Program
             default:
                 Console.WriteLine("✘ Opción inválida.");
                 break;
+        }
+    }
+
+    // Exportar reporte de préstamos activos a un archivo .txt
+    static void ExportarReportePrestamos()
+    {
+        string rutaReporte = "Data/reporte_prestamos.txt";
+
+        try
+        {
+            StreamWriter escritor = new StreamWriter(rutaReporte);
+
+            escritor.WriteLine("=== REPORTE DE PRÉSTAMOS ACTIVOS ===");
+            escritor.WriteLine($"Generado: {DateTime.Now}");
+            escritor.WriteLine("=====================================");
+
+            int contador = 0;
+
+            // FOR: recorrer todos los préstamos y escribir los activos
+            for (int i = 0; i < totalPrestamos; i++)
+            {
+                if (prestamos[i].estadoPrestamo == "activo")
+                {
+                    escritor.WriteLine($"Código: {prestamos[i].codigoPrestamo} | Usuario: {prestamos[i].carneUsuario} | Libro: {prestamos[i].codigoLibro} | Devolución: {prestamos[i].fechaDevolucion}");
+                    contador++;
+                }
+            }
+
+            escritor.WriteLine($"\nTotal préstamos activos: {contador}");
+            escritor.Close();
+
+            Console.WriteLine($"✔️ Reporte exportado en: {rutaReporte}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✘ Error al exportar el reporte: {ex.Message}");
         }
     }
 }
