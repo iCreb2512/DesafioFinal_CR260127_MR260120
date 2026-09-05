@@ -1,38 +1,44 @@
-Sistema de Biblioteca Universitaria
+# Sistema de Biblioteca Universitaria
 
-Estudiantes:  Edwin Benjamín Contreras Romero
-              José Roberto Miranda Rosales
-Carné:  CR260127
-        MR260120
+Aplicación de consola desarrollada en C# para administrar información básica de una biblioteca universitaria. El sistema utiliza archivos locales para conservar los datos generados durante su ejecución.
 
----
+## Funcionalidades
 
-Instrucciones para clonar y ejecutar el proyecto
+- Gestión de libros.
+- Registro de usuarios.
+- Control de préstamos.
+- Almacenamiento local en archivos CSV y TXT.
+- Menús interactivos y validación de datos.
 
-  Requisitos previos
-- [.NET SDK](https://dotnet.microsoft.com/download) instalado (versión 6.0 o superior)
-- Git instalado
+## Tecnologías
 
-Pasos
+- C#
+- .NET 6 o superior
+- Persistencia mediante archivos locales
 
-1. Clonar el repositorio:
+## Estructura
+
+- `IA.cs`: lógica principal del sistema.
+- `Parejas.cs`: módulos y operaciones complementarias.
+- `Data/`: datos generados por la aplicación.
+- `prompt.txt`: material de apoyo utilizado durante el desarrollo.
+
+## Ejecución
+
+Requisitos: Git y el SDK de .NET 6 o superior.
+
 ```bash
-   git clone https://github.com/[tu-usuario]/[nombre-repo].git
+git clone https://github.com/iCreb2512/DesafioFinal_CR260127_MR260120.git
+cd DesafioFinal_CR260127_MR260120
+dotnet run
 ```
 
-2. Entrar a la carpeta del proyecto:
-```bash
-   cd [nombre-repo]
-```
+La carpeta `Data/` se crea automáticamente. Los archivos `libros.csv`, `usuarios.txt` y `prestamos.txt` se generan al guardar datos por primera vez.
 
-3. Ejecutar el programa:
-```bash
-   dotnet run
-```
+## Demostración
 
-> La carpeta `Data/` se crea automáticamente al iniciar el programa. Los archivos `libros.csv`, `usuarios.txt` y `prestamos.txt` se generan al guardar datos por primera vez.
----
+[Ver video explicativo en Canva](https://www.canva.com/design/DAHK3cKST5I/COc-8tEe4DBUBCW8YlEbJA/watch?utm_content=DAHK3cKST5I&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h34a302263a)
 
-   Video explicativo
+## Autoría
 
-https://www.canva.com/design/DAHK3cKST5I/COc-8tEe4DBUBCW8YlEbJA/watch?utm_content=DAHK3cKST5I&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h34a302263a
+Proyecto académico realizado por Edwin Benjamín Contreras Romero y José Roberto Miranda Rosales.
